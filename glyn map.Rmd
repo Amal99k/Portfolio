@@ -1,0 +1,80 @@
+---
+title: "Police Mapping"
+output: html_document
+---
+
+library(ukpolice) 
+library(ggplot2) 
+library(dplyr)
+
+```{r}
+data <- ukc_stop_search_force("metropolitan", date = "2024-01")
+```
+
+### Look a the data
+
+```{r}
+dplyr::glimpse(data)
+```
+
+# activate the tidyverse
+library(tidyverse)
+
+#first pivot table
+```{r}
+data %>%
+  group_by(`outcome`) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+```
+
+
+#look at ethnicity 
+```{r}
+abc <- data %>%
+  group_by(outcome, self_defined_ethnicity) %>%
+  summarise(total = n()) %>%
+  arrange(desc(total))
+```
+```{r}
+arrests_eth <- data %>%
+  filter(outcome == "Arrest") %>%
+  group_by(self_defined_ethnicity) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+```
+
+
+data <- filter(data, age_range =="10-17")
+```{r}
+data_minors <- filter(data, age_range =="10-17", self_defined_ethnicity !="")
+```
+
+library(ggplot2)
+
+```{r}
+plot1 <- ggplot (arrests_eth, aes(self_defined_ethnicity, count)) +
+  geom_col() +
+  coord_flip()
+```
+
+```{r}
+arrests_eth <- data %>%
+  filter(outcome == "Arrest") %>%
+  group_by(self_defined_ethnicity) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count)) %>%
+  na.omit()
+```
+
+```{r}
+arrests_eth <- data %>%
+  mutate(eth= str_detect(self_defined_ethnicity, c ("Black", "White", "Asian"))
+```
+
+#load leaflet
+library(leaflet)
+
+
+
+
